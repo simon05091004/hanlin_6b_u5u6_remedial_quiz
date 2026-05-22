@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>翰林六下數學補救測驗｜第五＆六單元</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/firebase@10.12.2/firebase-app-compat.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/firebase@10.12.2/firebase-firestore-compat.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --u5c:#c8401a;--u5l:#fdf0eb;
+  --u6c:#1a50b8;--u6l:#ebf2fd;
+  --green:#178a56;--greenl:#e7f6ef;
+  --red:#c82828;--redl:#fdeaea;
+  --amber:#b87010;--amberl:#fdf3e0;
+  --gray:#4e5a6a;--grayl:#f4f6f9;--graym:#dde2ea;
+  --text:#1a2130;--texts:#4e5a6a;--texth:#8a96a6;
+  --white:#fff;--r:16px;--rs:10px;--rx:22px;
+  --sh:0 3px 16px rgba(0,0,0,.09);
+}
+html,body{height:100%;font-family:'Noto Sans TC',sans-serif;background:#edf1f8;color:var(--text);font-size:16px;line-height:1.65;overflow-x:hidden}
+.screen{display:none;min-height:100vh;flex-direction:column}
+.screen.active{display:flex}
+.bar{display:flex;align-items:center;gap:12px;padding:13px 18px;box-shadow:0 2px 10px rgba(0,0,0,.18);position:sticky;top:0;z-index:50}
+.bar-both{background:linear-gradient(135deg,#1a3a78,#2060cc)}
+.bar-u5{background:linear-gradient(135deg,#8b1a06,#c8401a)}
+.bar-u6{background:linear-gradient(135deg,#0d2a6e,#1a50b8)}
+.bar-res{background:linear-gradient(135deg,#1a3a78,#2060cc)}
+.bar-tch{background:linear-gradient(135deg,#052e16,#166534)}
+.bar .icon{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+.bar .ttl{color:#fff;font-size:15px;font-weight:700;letter-spacing:.3px}
+.bar .sub{color:rgba(255,255,255,.72);font-size:12px;margin-top:1px}
+.bar .flex1{flex:1}
+.back-btn{background:none;border:none;color:rgba(255,255,255,.85);font-size:13px;font-family:'Noto Sans TC',sans-serif;cursor:pointer;padding:0}
+#sw .body{flex:1;padding:18px 16px 30px;display:flex;flex-direction:column;align-items:center;gap:16px}
+.w-card{background:var(--white);border-radius:var(--r);padding:24px 20px;width:100%;max-width:520px;box-shadow:var(--sh)}
+.w-card h2{font-size:18px;font-weight:900;margin-bottom:4px}
+.w-card .desc{font-size:13.5px;color:var(--texts);margin-bottom:16px;line-height:1.75}
+.unit-pills{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.pill{padding:7px 14px;border-radius:var(--rx);font-size:12.5px;font-weight:700}
+.sub-pills{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:18px}
+.spill{padding:6px 10px;border-radius:var(--rs);font-size:12px;font-weight:500;text-align:center}
+label.fl{display:block;font-size:12.5px;font-weight:700;color:var(--texts);margin-bottom:5px}
+.inp{width:100%;padding:13px 15px;border:1.5px solid var(--graym);border-radius:var(--rs);font-size:16px;font-family:'Noto Sans TC',sans-serif;color:var(--text);background:var(--white);outline:none;transition:border-color .2s;margin-bottom:12px}
+.inp:focus{border-color:#1a50b8}
+.inp-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn-go{width:100%;padding:16px;background:linear-gradient(135deg,#1a3a78,#2060cc);color:#fff;border:none;border-radius:var(--rs);font-size:17px;font-weight:900;font-family:'Noto Sans TC',sans-serif;cursor:pointer;letter-spacing:1px;transition:transform .15s}
+.btn-go:active{transform:scale(.97)}
+.teacher-link{background:none;border:none;color:var(--texth);font-size:12px;cursor:pointer;font-family:'Noto Sans TC',sans-serif;text-decoration:underline;margin-top:6px;display:block;text-align:center}
+.qr-card{background:var(--white);border-radius:var(--r);padding:18px 20px;width:100%;max-width:520px;box-shadow:var(--sh);text-align:center}
+.qr-card p{font-size:13px;color:var(--texts);margin-bottom:12px;font-weight:500}
+.qr-card small{display:block;font-size:10.5px;color:var(--texth);margin-top:10px;word-break:break-all}
+.prog-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+.prog-row .qn{font-size:13px;font-weight:700;color:#fff}
+.prog-row .un{font-size:11px;color:rgba(255,255,255,.75);padding:2px 8px;background:rgba(255,255,255,.18);border-radius:20px}
+.pbar{height:6px;background:rgba(255,255,255,.25);border-radius:3px;overflow:hidden}
+.pfill{height:6px;background:#fff;border-radius:3px;transition:width .45s ease}
+#sq .body{flex:1;padding:14px 14px 20px;display:flex;flex-direction:column;gap:11px;max-width:680px;margin:0 auto;width:100%}
+.q-wrap{background:var(--white);border-radius:var(--r);padding:20px 18px;box-shadow:var(--sh)}
+.cat-tag{display:inline-flex;align-items:center;gap:6px;padding:5px 13px;border-radius:var(--rx);font-size:12px;font-weight:700;margin-bottom:12px}
+.q-type-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;margin-bottom:10px;margin-left:6px}
+.q-body{font-size:17px;font-weight:500;line-height:1.8;color:var(--text)}
+.q-body b{font-weight:900}
+.q-svg{display:flex;justify-content:center;margin:12px 0 4px}
+.q-svg svg{max-width:100%}
+.choices{display:flex;flex-direction:column;gap:9px}
+.ch{display:flex;align-items:center;gap:13px;padding:15px 17px;border:2px solid var(--graym);border-radius:var(--rs);background:var(--white);cursor:pointer;font-size:15.5px;font-family:'Noto Sans TC',sans-serif;color:var(--text);text-align:left;transition:all .15s;width:100%}
+.ch:active{transform:scale(.98)}
+.ch-lbl{width:30px;height:30px;border-radius:50%;background:var(--grayl);border:1.5px solid var(--graym);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--texts);flex-shrink:0;transition:all .15s}
+.ch:hover{border-color:#2060cc;background:#ebf2fd}
+.ch:hover .ch-lbl{background:#2060cc;color:#fff;border-color:#2060cc}
+.ch.correct{border-color:var(--green);background:var(--greenl);pointer-events:none}
+.ch.correct .ch-lbl{background:var(--green);color:#fff;border-color:var(--green)}
+.ch.wrong{border-color:var(--red);background:var(--redl);pointer-events:none}
+.ch.wrong .ch-lbl{background:var(--red);color:#fff;border-color:var(--red)}
+.ch.dim{pointer-events:none;opacity:.55}
+.fb{border-radius:var(--rs);padding:13px 15px;font-size:13.5px;font-weight:500;display:none;align-items:flex-start;gap:10px;line-height:1.7}
+.fb.on{display:flex}
+.fb.ok{background:var(--greenl);color:#136848}
+.fb.no{background:var(--redl);color:#a02020}
+.fb-icon{font-size:22px;flex-shrink:0;line-height:1}
+.btn-nx{width:100%;padding:15px;background:linear-gradient(135deg,#1a3a78,#2060cc);color:#fff;border:none;border-radius:var(--rs);font-size:16px;font-weight:900;font-family:'Noto Sans TC',sans-serif;cursor:pointer;display:none;letter-spacing:.5px}
+.btn-nx.on{display:block}
+#sr .body{flex:1;padding:14px;max-width:680px;margin:0 auto;width:100%}
+.hero{background:var(--white);border-radius:var(--r);padding:22px 18px;box-shadow:var(--sh);margin-bottom:13px;text-align:center}
+.score-ring{width:106px;height:106px;border-radius:50%;margin:0 auto 13px;display:flex;flex-direction:column;align-items:center;justify-content:center;border:6px solid;font-weight:700}
+.score-ring .big{font-size:34px;line-height:1}
+.score-ring .sm{font-size:12px;margin-top:1px;opacity:.8}
+.rh{border-color:var(--green);color:var(--green);background:var(--greenl)}
+.rm{border-color:var(--amber);color:var(--amber);background:var(--amberl)}
+.rl{border-color:var(--red);color:var(--red);background:var(--redl)}
+.hero h2{font-size:17px;font-weight:900;margin-bottom:3px}
+.hero p{font-size:13.5px;color:var(--texts)}
+.stat3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-top:14px}
+.sb{background:var(--grayl);border-radius:var(--rs);padding:11px;text-align:center}
+.sb .v{font-size:23px;font-weight:900;color:#1a50b8}
+.sb .l{font-size:11px;color:var(--texth);margin-top:1px}
+.sec-hd{font-size:14.5px;font-weight:900;color:var(--text);margin:13px 0 7px 2px;display:flex;align-items:center;gap:8px}
+.sec-hd::before{content:'';width:4px;height:17px;border-radius:2px;background:#1a50b8;display:inline-block}
+.cat-card{background:var(--white);border-radius:var(--r);padding:15px 17px;box-shadow:var(--sh);margin-bottom:9px}
+.cat-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}
+.cat-nm{font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px;flex:1}
+.bar-bg{height:8px;background:var(--graym);border-radius:4px;flex:1;margin-left:10px;overflow:hidden}
+.bar-fg{height:8px;border-radius:4px;transition:width .6s ease}
+.cat-sc{font-size:13px;font-weight:700;white-space:nowrap;margin-left:8px}
+.wrong-list{margin-top:10px;border-top:1px solid var(--graym);padding-top:10px}
+.wi{padding:9px 11px;background:var(--redl);border-radius:var(--rs);margin-bottom:7px;font-size:13px;line-height:1.65}
+.wi .wlbl{font-size:11px;font-weight:700;color:var(--red);margin-bottom:3px}
+.di{background:var(--white);border-radius:var(--r);padding:16px 17px;box-shadow:var(--sh);margin-bottom:8px}
+.di-tags{display:flex;align-items:center;gap:6px;margin-bottom:9px;flex-wrap:wrap}
+.di-tag{padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700}
+.di-q{font-size:14px;margin-bottom:9px;line-height:1.8}
+.di-ans{font-size:13px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.di-exp{font-size:12.5px;color:var(--texts);margin-top:8px;padding-top:8px;border-top:1px solid var(--graym);line-height:1.7}
+.btnrow{display:flex;gap:10px;margin:13px 0 26px}
+.btn2a{flex:1;padding:13px;border:2px solid #1a50b8;background:var(--white);color:#1a50b8;border-radius:var(--rs);font-size:14px;font-weight:700;font-family:'Noto Sans TC',sans-serif;cursor:pointer}
+.btn2b{flex:1;padding:13px;background:linear-gradient(135deg,#1a3a78,#2060cc);color:#fff;border:none;border-radius:var(--rs);font-size:14px;font-weight:700;font-family:'Noto Sans TC',sans-serif;cursor:pointer}
+.fb-status{font-size:12px;padding:8px 12px;border-radius:var(--rs);margin-bottom:10px}
+.fb-status.ok{background:var(--greenl);color:var(--green)}
+.fb-status.err{background:var(--redl);color:var(--red)}
+#st .body{flex:1;padding:14px;max-width:760px;margin:0 auto;width:100%}
+.tc{background:var(--white);border-radius:var(--r);padding:17px 18px;box-shadow:var(--sh);margin-bottom:12px}
+.tc h3{font-size:15px;font-weight:900;color:#1a50b8;margin-bottom:13px}
+.tc-filter{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
+.tc-filter select{padding:7px 10px;border:1.5px solid var(--graym);border-radius:var(--rs);font-size:13px;font-family:'Noto Sans TC',sans-serif;color:var(--text);background:var(--white);outline:none}
+.tc-filter button{padding:7px 14px;background:#1a50b8;color:#fff;border:none;border-radius:var(--rs);font-size:13px;font-family:'Noto Sans TC',sans-serif;cursor:pointer;font-weight:700}
+.sr-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--graym)}
+.sr-row:last-of-type{border-bottom:none}
+.av{width:38px;height:38px;border-radius:50%;background:#ebf2fd;color:#1a50b8;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}
+.sinfo{flex:1}.sinfo .nm{font-size:14px;font-weight:700}.sinfo .mt{font-size:12px;color:var(--texts)}
+.sbadge{padding:5px 12px;border-radius:20px;font-size:13px;font-weight:700;white-space:nowrap}
+.empty{text-align:center;padding:28px;color:var(--texth);font-size:14px}
+.btn-clr{background:none;border:1.5px solid var(--red);color:var(--red);padding:8px 16px;border-radius:var(--rs);font-size:13px;font-family:'Noto Sans TC',sans-serif;cursor:pointer;margin-top:12px}
+.weakness-bar{margin-bottom:14px}
+.wb-row{display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px}
+.wb-bg{height:9px;background:var(--graym);border-radius:5px;overflow:hidden}
+.wb-fg{height:9px;border-radius:5px}
+.remedy-box{padding:12px 14px;background:var(--amberl);border-radius:var(--rs);font-size:13px;color:var(--amber);line-height:1.7;margin-bottom:8px}
+.spin{display:inline-block;width:18px;height:18px;border:2px solid var(--graym);border-top-color:#1a50b8;border-radius:50%;animation:sp .7s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes sp{to{transform:rotate(360deg)}}
+#slogin .body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px}
+.login-card{background:var(--white);border-radius:var(--r);padding:30px 24px;width:100%;max-width:360px;box-shadow:var(--sh);text-align:center}
+.login-card h2{font-size:19px;font-weight:900;margin-bottom:6px}
+.login-card p{font-size:13px;color:var(--texts);margin-bottom:20px}
+@media print{.bar,.btnrow,.btn-go,.teacher-link,.qr-card{display:none!important}body{background:#fff}}
+@media(max-width:400px){.sub-pills{grid-template-columns:1fr}.stat3{grid-template-columns:1fr 1fr}.inp-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- 歡迎頁 -->
+<div id="sw" class="screen active">
+  <div class="bar bar-both">
+    <div class="icon">📚</div>
+    <div class="flex1">
+      <div class="ttl">翰林六下數學補救測驗</div>
+      <div class="sub">第五單元：怎樣解題　✦　第六單元：角柱與圓柱</div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="w-card">
+      <h2>👋 同學，準備好了嗎？</h2>
+      <p class="desc">本測驗共 <b>21 題</b>（選擇題5題＋計算題16題），涵蓋翰林版六下第五、六單元核心概念。請誠實作答，結果幫助老師了解你的學習狀況。</p>
+      <div class="unit-pills">
+        <span class="pill" style="background:#fdf0eb;color:#c8401a">🧩 第五單元：怎樣解題（10題）</span>
+        <span class="pill" style="background:#ebf2fd;color:#1a50b8">📐 第六單元：角柱與圓柱（11題）</span>
+      </div>
+      <div class="sub-pills">
+        <span class="spill" style="background:#fdf0eb;color:#c8401a">找規律</span>
+        <span class="spill" style="background:#fdf0eb;color:#c8401a">逆向思考</span>
+        <span class="spill" style="background:#fdf0eb;color:#c8401a">假設法</span>
+        <span class="spill" style="background:#fdf0eb;color:#c8401a">列舉畫圖法</span>
+        <span class="spill" style="background:#ebf2fd;color:#1a50b8">角柱基本概念</span>
+        <span class="spill" style="background:#ebf2fd;color:#1a50b8">展開圖</span>
+        <span class="spill" style="background:#ebf2fd;color:#1a50b8">體積</span>
+        <span class="spill" style="background:#ebf2fd;color:#1a50b8">表面積</span>
+      </div>
+      <div class="inp-row">
+        <div>
+          <label class="fl">班級</label>
+          <select class="inp" id="icls" style="appearance:none">
+            <option value="">請選擇班級</option>
+            <option>六年一班</option><option>六年二班</option><option>六年三班</option>
+            <option>六年四班</option><option>六年五班</option><option>六年六班</option>
+            <option>六年七班</option><option>六年八班</option><option>六年九班</option>
+            <option>六年十班</option>
+          </select>
+        </div>
+        <div>
+          <label class="fl">座號</label>
+          <input class="inp" id="iseat" type="number" placeholder="座號" min="1" max="40">
+        </div>
+      </div>
+      <button class="btn-go" onclick="startQuiz()">開始測驗 →</button>
+      <button class="teacher-link" onclick="go('slogin')">教師成績管理 / 補救分析</button>
+    </div>
+    <div class="qr-card">
+      <p>📱 學生掃描 QR Code，可在平板直接作答</p>
+      <div id="qrbox"></div>
+      <small id="qrurl"></small>
+    </div>
+  </div>
+</div>
+
+<!-- 測驗頁 -->
+<div id="sq" class="screen">
+  <div class="bar bar-both" id="q-bar">
+    <div class="icon" id="q-icon">🧩</div>
+    <div class="flex1">
+      <div class="prog-row">
+        <div class="qn" id="qcnt">1 / 21</div>
+        <div class="un" id="q-unit-tag">第五單元</div>
+      </div>
+      <div class="pbar"><div class="pfill" id="pfill" style="width:5%"></div></div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="q-wrap">
+      <div id="qcat" class="cat-tag"></div>
+      <div id="qtext" class="q-body"></div>
+      <div id="qsvg" class="q-svg" style="display:none"></div>
+    </div>
+    <div class="choices" id="choices"></div>
+    <div class="fb" id="fb"><span class="fb-icon" id="fi"></span><div id="ft"></div></div>
+    <button class="btn-nx" id="bnnx" onclick="nextQ()">下一題 →</button>
+  </div>
+</div>
+
+<!-- 結果頁 -->
+<div id="sr" class="screen">
+  <div class="bar bar-res">
+    <div class="icon">📊</div>
+    <div class="flex1">
+      <div class="ttl">測驗結果報告</div>
+      <div class="sub" id="rname"></div>
+    </div>
+  </div>
+  <div class="body">
+    <div id="upload-status" style="display:none" class="fb-status ok"></div>
+    <div class="hero">
+      <div class="score-ring" id="sring"><div class="big" id="snum"></div><div class="sm">分</div></div>
+      <h2 id="smsg"></h2><p id="ssub"></p>
+      <div class="stat3">
+        <div class="sb"><div class="v" id="st1"></div><div class="l">答對題數</div></div>
+        <div class="sb"><div class="v" id="st2"></div><div class="l">答錯題數</div></div>
+        <div class="sb"><div class="v" id="st3"></div><div class="l">得分率</div></div>
+      </div>
+    </div>
+    <div class="sec-hd">各概念分類表現</div><div id="catrpt"></div>
+    <div class="sec-hd">錯誤題目詳解</div><div id="wrongdet"></div>
+    <div class="btnrow">
+      <button class="btn2a" onclick="window.print()">🖨 列印報告</button>
+      <button class="btn2b" onclick="resetAll()">重新作答</button>
+    </div>
+  </div>
+</div>
+
+<!-- 教師登入 -->
+<div id="slogin" class="screen">
+  <div class="bar bar-tch">
+    <div class="icon">🔐</div>
+    <div class="flex1" style="display:flex;align-items:center;justify-content:space-between">
+      <div class="ttl">教師登入</div>
+      <button class="back-btn" onclick="go('sw')">← 返回</button>
+    </div>
+  </div>
+  <div class="body">
+    <div class="login-card">
+      <h2>👩‍🏫 教師專區</h2>
+      <p>請輸入密碼查看全班成績及補救教學建議</p>
+      <input class="inp" id="t-pwd" type="password" placeholder="請輸入密碼" onkeydown="if(event.key==='Enter')teacherLogin()">
+      <button class="btn-go" onclick="teacherLogin()">進入教師看板</button>
+      <div id="login-err" style="display:none;margin-top:10px;font-size:13px;color:var(--red);text-align:center">❌ 密碼錯誤</div>
+    </div>
+  </div>
+</div>
+
+<!-- 教師看板 -->
+<div id="st" class="screen">
+  <div class="bar bar-tch">
+    <div class="icon">👩‍🏫</div>
+    <div class="flex1">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div class="ttl">教師成績管理</div>
+        <button class="back-btn" onclick="go('sw')">← 返回</button>
+      </div>
+      <div class="sub">翰林六下 第五＆六單元 補救測驗</div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="tc">
+      <h3>🔍 篩選條件</h3>
+      <div class="tc-filter">
+        <select id="t-cls-filter">
+          <option value="">所有班級</option>
+          <option>六年一班</option><option>六年二班</option><option>六年三班</option>
+          <option>六年四班</option><option>六年五班</option><option>六年六班</option>
+          <option>六年七班</option><option>六年八班</option><option>六年九班</option>
+          <option>六年十班</option>
+        </select>
+        <button onclick="loadTeacherData()">🔄 載入資料</button>
+        <span id="t-loading" style="display:none;font-size:13px;color:var(--texth)"><span class="spin"></span>載入中...</span>
+      </div>
+      <div id="t-fb-note" style="font-size:12px;color:var(--texth);margin-top:4px"></div>
+    </div>
+    <div class="tc"><h3>📋 學生作答記錄</h3><div id="tlist"></div></div>
+    <div class="tc"><h3>🎯 全班弱點分析</h3><div id="tweak"></div></div>
+    <div class="tc"><h3>📌 補救教學建議</h3><div id="tremed"></div></div>
+  </div>
+</div>
+
+<script>
+// ══ Firebase（已直接內嵌，不需外部 config.js）══
+const TEACHER_PASSWORD = "teacher123";
+const COLLECTION = "mathQuiz_hanlin_6b_u5u6";
+const TOTAL_Q = 21;
+
+let db = null, useFirebase = false;
+let curQ = 0, answers = [], stu = {}, answered = false;
+
+function initFirebase(){
+  try{
+    const c={apiKey:"AIzaSyC9lemHX8VEk7DiszkanLWGZjXB4TlCJKs",authDomain:"math-5-6.firebaseapp.com",projectId:"math-5-6",storageBucket:"math-5-6.firebasestorage.app",messagingSenderId:"791241827089",appId:"1:791241827089:web:d33aec52c2bd1f59b322b0",measurementId:"G-EW3ZB5YZKW"};
+    if(!firebase.apps.length)firebase.initializeApp(c);
+    db=firebase.firestore();
+    useFirebase=true;
+  }catch(e){console.error('Firebase:',e);}
+}
+
+// ══ 補救教學建議 ══
+const REMEDY_MAP = {
+  '找規律':'建議引導學生用表格逐項列出數列，觀察相鄰項的差值或倍數關係，再歸納出規律公式。可用圖形排列（如正方形個數）搭配視覺輔助，讓學生自己發現規律。',
+  '逆向思考':'逆向思考的關鍵是「從結果往回推」。建議讓學生先畫流程圖，再用相反運算倒推，強調加法的反運算是減法、乘法的反運算是除法。多練習「還原題」建立信心。',
+  '假設法':'假設法需先做一個假設（如：全部是雞），算出初始結果，再根據差值調整。建議用表格整理：假設值、實際值、差值、每次調整量，讓學生看到調整的規律。',
+  '列舉畫圖法':'列舉法需要系統性地列出所有可能，避免重複或遺漏。建議教學生用樹狀圖或表格輔助，並養成「分類討論」的習慣，確保列出所有情形。',
+  '角柱基本概念':'建議用實物（積木、餅乾盒）讓學生直接數頂點、稜、面，並觀察「底面邊數」與各部分數量的關係：頂點數＝底面邊數×2，稜數＝底面邊數×3，面數＝底面邊數＋2。',
+  '展開圖':'展開圖難在「空間想像」。建議讓學生動手摺紙盒，再攤開觀察，從實作到抽象。特別強調：兩個底面形狀相同，側面數等於底面邊數。',
+  '體積':'角柱體積公式：底面積×高。關鍵是先正確求出底面積（可能是三角形、梯形等），再乘以高。建議分步驟：①算底面積②乘以高，避免粗心。',
+  '表面積':'表面積＝2個底面積＋各側面積。側面積＝各側面（長方形）面積之和。建議畫展開圖再計算，讓學生清楚知道有哪些面，避免漏算。',
+};
+
+// ══ 題目資料（21題）══════════════════════════════════════════
+const QS = [
+
+// ────── 第五單元：怎樣解題（10題）──────────────────────────────
+
+// 【選擇題1】找規律
+{id:1,unit:'第五單元',sub:'找規律',type:'選擇題',
+ uc:{bg:'#fdf0eb',c:'#c8401a'},ui:'🧩',
+ text:'觀察下列數列的規律：<b>2, 5, 10, 17, 26, ...</b><br>請問第 <b>7</b> 個數是多少？',
+ svg:null,
+ choices:['A. 37','B. 48','C. 50','D. 52'],
+ ans:2,
+ exp:'差值依序為 3, 5, 7, 9, 11, 13...（每次增加2）。第6個數：26＋11＝37，第7個數：37＋13＝<b>50</b>。'},
+
+// 【選擇題2】逆向思考
+{id:2,unit:'第五單元',sub:'逆向思考',type:'選擇題',
+ uc:{bg:'#fdf0eb',c:'#c8401a'},ui:'🧩',
+ text:'一個數先乘以 <b>3</b>，再加上 <b>7</b>，結果等於 <b>34</b>。請問這個數是多少？',
+ svg:null,
+ choices:['A. 7','B. 8','C. 9','D. 10'],
+ ans:2,
+ exp:'逆向推算：34 先減 7 得 27，再除以 3 得 <b>9</b>。驗算：9×3＋7＝27＋7＝34 ✓'},
+
+// 【選擇題3】假設法
+{id:3,unit:'第五單元',sub:'假設法',type:'選擇題',
+ uc:{bg:'#fdf0eb',c:'#c8401a'},ui:'🧩',
+ text:'雞和兔共有 <b>10</b> 隻，腳共有 <b>28</b> 隻。請問兔子有幾隻？',
+ svg:null,
+ choices:['A. 3隻','B. 4隻','C. 5隻','D. 6隻'],
+ ans:3,
+ exp:'假設全是雞：10×2＝20隻腳，實際多 28－20＝8 隻腳，每換一隻兔多 4－2＝2 隻腳，兔子有 8÷2＝<b>4隻</b>，雞有 6 隻。'},
+
+// 【選擇題4】找規律
+{id:4,unit:'第五單元',sub:'找規律',type:'選擇題',
+ uc:{bg:'#fdf0eb',c:'#c8401a'},ui:'🧩',
+ text:'用牙籤排等邊三角形：排 <b>1</b> 個用 3 根，排 <b>2</b> 個用 5 根，排 <b>3</b> 個用 7 根…<br>排 <b>20</b> 個需要幾根牙籤？',
+ svg:null,
+ choices:['A. 39根','B. 40根','C. 41根','D. 42根'],
+ ans:2,
+ exp:'每增加一個三角形增加 2 根牙籤，從第1個的3根開始：3＋(20－1)×2＝3＋38＝<b>41根</b>。'},
+
+// 【選擇題5】列舉畫圖法
+{id:5,unit:'第五單元',sub:'列舉畫圖法',type:'選擇題',
+ uc:{bg:'#fdf0eb',c:'#c8401a'},ui:'🧩',
+ text:'從甲地到乙地有 <b>3</b> 條路，從乙地到丙地有 <b>2</b> 條路，從丙地到丁地有 <b>2</b> 條路。<br>從甲地到丁地共有幾種走法？',
+ svg:null,
+ choices:['A. 7種','B. 10種','C. 12種','D. 14種'],
+ ans:2,
+ exp:'3×2×2＝<b>12種</b>。每段路的走法相乘（乘法原理）。'},
+
+// 【計算題6】找規律
+{id:6,unit:'第五單元',sub:'找規律',type:'計算題',
+ uc:{bg:'#fdf0eb',c:'#c8401a'},ui:'🧩',
+ text:'觀察規律：<br><b>1×1＝1</b><br><b>11×11＝121</b><br><b>111×111＝12321</b><br>請問 <b>1111×1111</b> 等於多少？',
+ svg:null,
+ choices:['A. 1234321','B. 1233321','C. 12344321','D. 123321'],
+ ans:0,
+ exp:'依規律，111…（n個1）×111…（n個1）＝123…n…321（中間數字先遞增到n再遞減）。4個1相乘＝<b>1234321</b>。'},
+
+// 【計算題7】逆向思考
+{id:7,unit:'第五單元',sub:'逆向思考',type:'計算題',
+ uc:{bg:'#fdf0eb',c:'#c8401a'},ui:'🧩',
+ text:'小明有一些糖果，第一次給了別人一半，第二次又給了剩下的 <b>1/3</b>，最後還剩 <b>20</b> 顆。<br>小明原來有幾顆糖果？',
+ svg:null,
+ choices:['A. 50顆','B. 60顆','C. 72顆','D. 80顆'],
+ ans:1,
+ exp:'逆向推算：剩20顆，是給第二次後的結果。給1/3後剩2/3，所以給第二次前有20÷(2/3)＝30顆。30顆是給第一次後的一半，所以原來有30×2＝<b>60顆</b>。'},
+
+// 【計算題8】假設法
+{id:8,unit:'第五單元',sub:'假設法',type:'計算題',
+ uc:{bg:'#fdf0eb',c:'#c8401a'},ui:'🧩',
+ text:'大人票每張 <b>100</b> 元，兒童票每張 <b>50</b> 元，共賣出 <b>30</b> 張，總收入 <b>2200</b> 元。<br>大人票賣了幾張？',
+ svg:null,
+ choices:['A. 10張','B. 12張','C. 14張','D. 16張'],
+ ans:2,
+ exp:'假設全是兒童票：30×50＝1500元，差 2200－1500＝700元。每換一張大人票多 100－50＝50元，大人票＝700÷50＝<b>14張</b>，兒童票＝16張。'},
+
+// 【計算題9】逆向思考
+{id:9,unit:'第五單元',sub:'逆向思考',type:'計算題',
+ uc:{bg:'#fdf0eb',c:'#c8401a'},ui:'🧩',
+ text:'一個數加上 <b>15</b>，乘以 <b>4</b>，再減去 <b>20</b>，結果是 <b>100</b>。這個數是多少？',
+ svg:null,
+ choices:['A. 15','B. 18','C. 20','D. 25'],
+ ans:0,
+ exp:'逆向推算：100 加 20 得 120，除以 4 得 30，再減 15 得 <b>15</b>。驗算：(15＋15)×4－20＝120－20＝100 ✓'},
+
+// 【計算題10】列舉畫圖法
+{id:10,unit:'第五單元',sub:'列舉畫圖法',type:'計算題',
+ uc:{bg:'#fdf0eb',c:'#c8401a'},ui:'🧩',
+ text:'用 <b>1、2、3、4</b> 四個數字（每個數字只用一次），可以排列成幾個四位數？其中最大的四位數是多少？',
+ svg:null,
+ choices:['A. 24個，最大是4321','B. 12個，最大是4321','C. 24個，最大是4312','D. 16個，最大是4321'],
+ ans:0,
+ exp:'排列數：4×3×2×1＝<b>24個</b>。最大的四位數：從大到小排列，千位4、百位3、十位2、個位1＝<b>4321</b>。'},
+
+// ────── 第六單元：角柱與圓柱（11題）──────────────────────────────
+
+// 【計算題11】角柱基本概念
+{id:11,unit:'第六單元',sub:'角柱基本概念',type:'計算題',
+ uc:{bg:'#ebf2fd',c:'#1a50b8'},ui:'📐',
+ text:'一個<b>五角柱</b>，請回答：<br>①它有幾個頂點？<br>②它有幾條稜？<br>③它有幾個面？',
+ svg:null,
+ choices:['A. 頂點10，稜15，面7','B. 頂點10，稜15，面6','C. 頂點8，稜15，面7','D. 頂點10，稜12，面7'],
+ ans:0,
+ exp:'底面為五邊形（5條邊）：<br>頂點數＝5×2＝<b>10個</b><br>稜數＝5×3＝<b>15條</b>（上底5＋下底5＋側稜5）<br>面數＝5＋2＝<b>7個</b>（5個側面＋2個底面）'},
+
+// 【計算題12】角柱基本概念
+{id:12,unit:'第六單元',sub:'角柱基本概念',type:'計算題',
+ uc:{bg:'#ebf2fd',c:'#1a50b8'},ui:'📐',
+ text:'下列哪一個敘述是<b>正確</b>的？',
+ svg:null,
+ choices:['A. 三角柱有6條稜','B. 四角柱有10個頂點','C. 六角柱有12個頂點','D. 三角柱有5個面'],
+ ans:2,
+ exp:'六角柱：頂點數＝6×2＝<b>12個</b> ✓<br>三角柱：稜數＝3×3＝9條（非6條）✗<br>四角柱：頂點數＝4×2＝8個（非10個）✗<br>三角柱：面數＝3＋2＝5個 ✓（C才是正確選項）'},
+
+// 【計算題13】展開圖
+{id:13,unit:'第六單元',sub:'展開圖',type:'計算題',
+ uc:{bg:'#ebf2fd',c:'#1a50b8'},ui:'📐',
+ text:'一個<b>三角柱</b>的展開圖，應該包含哪些圖形？',
+ svg:null,
+ choices:['A. 2個三角形＋3個長方形','B. 3個三角形＋2個長方形','C. 2個三角形＋2個長方形','D. 2個三角形＋4個長方形'],
+ ans:0,
+ exp:'三角柱展開後：<br>・2個底面（三角形）<br>・3個側面（長方形，等於底面邊數）<br>共 <b>2個三角形＋3個長方形</b>。'},
+
+// 【計算題14】展開圖
+{id:14,unit:'第六單元',sub:'展開圖',type:'計算題',
+ uc:{bg:'#ebf2fd',c:'#1a50b8'},ui:'📐',
+ text:'一個正方體（每邊長 <b>4 公分</b>）的展開圖，共有幾個正方形？<br>這個展開圖的總面積是多少平方公分？',
+ svg:null,
+ choices:['A. 6個，96平方公分','B. 6個，64平方公分','C. 4個，96平方公分','D. 8個，96平方公分'],
+ ans:0,
+ exp:'正方體（四角柱且底面為正方形）有6個面，展開後有<b>6個正方形</b>。每個面面積：4×4＝16平方公分，總面積：16×6＝<b>96平方公分</b>。'},
+
+// 【計算題15】體積
+{id:15,unit:'第六單元',sub:'體積',type:'計算題',
+ uc:{bg:'#ebf2fd',c:'#1a50b8'},ui:'📐',
+ text:'一個三角柱，底面是直角三角形，兩股分別為 <b>6 公分</b>和 <b>8 公分</b>，高為 <b>10 公分</b>。<br>體積是多少立方公分？',
+ svg:null,
+ choices:['A. 200立方公分','B. 240立方公分','C. 300立方公分','D. 480立方公分'],
+ ans:1,
+ exp:'底面積（直角三角形）＝6×8÷2＝24平方公分<br>體積＝底面積×高＝24×10＝<b>240立方公分</b>'},
+
+// 【計算題16】體積
+{id:16,unit:'第六單元',sub:'體積',type:'計算題',
+ uc:{bg:'#ebf2fd',c:'#1a50b8'},ui:'📐',
+ text:'一個四角柱，底面是正方形，邊長 <b>5 公分</b>，高 <b>8 公分</b>。<br>體積是多少立方公分？',
+ svg:null,
+ choices:['A. 160立方公分','B. 200立方公分','C. 240立方公分','D. 125立方公分'],
+ ans:1,
+ exp:'底面積（正方形）＝5×5＝25平方公分<br>體積＝底面積×高＝25×8＝<b>200立方公分</b>'},
+
+// 【計算題17】體積
+{id:17,unit:'第六單元',sub:'體積',type:'計算題',
+ uc:{bg:'#ebf2fd',c:'#1a50b8'},ui:'📐',
+ text:'一個圓柱，底面半徑為 <b>3 公分</b>，高為 <b>10 公分</b>。（π取3.14）<br>體積約是多少立方公分？',
+ svg:null,
+ choices:['A. 188.4立方公分','B. 282.6立方公分','C. 314立方公分','D. 94.2立方公分'],
+ ans:1,
+ exp:'底面積＝π×r²＝3.14×3²＝3.14×9＝28.26平方公分<br>體積＝底面積×高＝28.26×10＝<b>282.6立方公分</b>'},
+
+// 【計算題18】表面積
+{id:18,unit:'第六單元',sub:'表面積',type:'計算題',
+ uc:{bg:'#ebf2fd',c:'#1a50b8'},ui:'📐',
+ text:'一個三角柱，底面是等邊三角形，邊長 <b>4 公分</b>（底面積約 <b>6.93 平方公分</b>），高為 <b>6 公分</b>。<br>表面積約是多少平方公分？',
+ svg:null,
+ choices:['A. 85.86平方公分','B. 72平方公分','C. 97.86平方公分','D. 75.6平方公分'],
+ ans:0,
+ exp:'表面積＝2個底面＋3個側面<br>兩底面：2×6.93＝13.86平方公分<br>三個側面（都是長方形）：3×(4×6)＝72平方公分<br>總表面積：13.86＋72＝<b>85.86平方公分</b>'},
+
+// 【計算題19】表面積
+{id:19,unit:'第六單元',sub:'表面積',type:'計算題',
+ uc:{bg:'#ebf2fd',c:'#1a50b8'},ui:'📐',
+ text:'一個四角柱，底面為長方形，長 <b>6 公分</b>、寬 <b>4 公分</b>，高 <b>5 公分</b>。<br>表面積是多少平方公分？',
+ svg:null,
+ choices:['A. 120平方公分','B. 148平方公分','C. 168平方公分','D. 208平方公分'],
+ ans:1,
+ exp:'底面積（長方形）＝6×4＝24平方公分<br>兩底面：2×24＝48平方公分<br>四個側面：2×(6×5)＋2×(4×5)＝60＋40＝100平方公分<br>總表面積：48＋100＝<b>148平方公分</b>'},
+
+// 【計算題20】表面積
+{id:20,unit:'第六單元',sub:'表面積',type:'計算題',
+ uc:{bg:'#ebf2fd',c:'#1a50b8'},ui:'📐',
+ text:'一個圓柱，底面半徑 <b>4 公分</b>，高 <b>10 公分</b>。（π取3.14）<br>側面積是多少平方公分？',
+ svg:null,
+ choices:['A. 125.6平方公分','B. 251.2平方公分','C. 376.8平方公分','D. 502.4平方公分'],
+ ans:1,
+ exp:'側面積＝底面圓周長×高＝2×π×r×高＝2×3.14×4×10＝<b>251.2平方公分</b>'},
+
+// 【計算題21】表面積
+{id:21,unit:'第六單元',sub:'表面積',type:'計算題',
+ uc:{bg:'#ebf2fd',c:'#1a50b8'},ui:'📐',
+ text:'一個圓柱，底面半徑 <b>3 公分</b>，高 <b>8 公分</b>。（π取3.14）<br>全面積（表面積）約是多少平方公分？',
+ svg:null,
+ choices:['A. 169.56平方公分','B. 207.24平方公分','C. 244.92平方公分','D. 150.72平方公分'],
+ ans:1,
+ exp:'兩底面積：2×π×r²＝2×3.14×9＝56.52平方公分<br>側面積：2×π×r×h＝2×3.14×3×8＝150.72平方公分<br>全面積：56.52＋150.72＝<b>207.24平方公分</b>'},
+
+];
+
+// ══ 核心邏輯 ══
+function go(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function startQuiz(){
+  const cls=document.getElementById('icls').value;
+  const seat=document.getElementById('iseat').value;
+  if(!cls){alert('請選擇班級！');return;}
+  if(!seat){alert('請輸入座號！');return;}
+  stu={cls,seat,time:new Date().toLocaleString('zh-TW')};
+  answers=[];curQ=0;
+  loadQ(0);go('sq');
+}
+
+function loadQ(idx){
+  answered=false;
+  const q=QS[idx];
+  const pct=Math.round((idx+1)/TOTAL_Q*100);
+  document.getElementById('qcnt').textContent=(idx+1)+' / '+TOTAL_Q;
+  document.getElementById('pfill').style.width=pct+'%';
+  document.getElementById('q-unit-tag').textContent=q.unit;
+  document.getElementById('q-icon').textContent=q.ui;
+  // bar 顏色依單元切換
+  const bar=document.getElementById('q-bar');
+  bar.className='bar '+(q.unit==='第五單元'?'bar-u5':'bar-u6');
+  // 分類標籤
+  const tag=document.getElementById('qcat');
+  tag.textContent=q.unit+' · '+q.sub+' ｜ '+q.type;
+  tag.style.background=q.uc.bg;tag.style.color=q.uc.c;
+  document.getElementById('qtext').innerHTML=q.text;
+  const svgEl=document.getElementById('qsvg');
+  if(q.svg){svgEl.innerHTML=q.svg;svgEl.style.display='flex';}
+  else{svgEl.innerHTML='';svgEl.style.display='none';}
+  const cc=document.getElementById('choices');
+  cc.innerHTML='';
+  q.choices.forEach((ch,i)=>{
+    const b=document.createElement('button');
+    b.className='ch';
+    b.innerHTML=`<span class="ch-lbl">${['A','B','C','D'][i]}</span><span>${ch.slice(3)}</span>`;
+    b.onclick=()=>pick(i);
+    cc.appendChild(b);
+  });
+  document.getElementById('fb').className='fb';
+  document.getElementById('bnnx').className='btn-nx';
+}
+
+function pick(idx){
+  if(answered)return;
+  answered=true;
+  const q=QS[curQ];
+  const ok=idx===q.ans;
+  answers.push({id:q.id,unit:q.unit,sub:q.sub,type:q.type,uc:q.uc,text:q.text,
+    correct:ok,chosenIdx:idx,rightIdx:q.ans,chosen:q.choices[idx],right:q.choices[q.ans],exp:q.exp});
+  document.querySelectorAll('.ch').forEach((b,i)=>{
+    if(i===q.ans)b.classList.add('correct');
+    else if(i===idx&&!ok)b.classList.add('wrong');
+    else b.classList.add('dim');
+  });
+  const fbEl=document.getElementById('fb');
+  document.getElementById('fi').textContent=ok?'✅':'❌';
+  document.getElementById('ft').innerHTML=ok
+    ?'答對了！<br><span style="font-size:12.5px;opacity:.85">'+q.exp+'</span>'
+    :'答錯了，加油！<br><span style="font-size:12.5px">'+q.exp+'</span>';
+  fbEl.className='fb on '+(ok?'ok':'no');
+  const nx=document.getElementById('bnnx');
+  nx.className='btn-nx on';
+  nx.textContent=curQ<TOTAL_Q-1?'下一題 →':'查看結果 →';
+}
+
+function nextQ(){
+  curQ++;
+  if(curQ>=TOTAL_Q)showResult();
+  else loadQ(curQ);
+}
+
+async function showResult(){
+  const corr=answers.filter(a=>a.correct).length;
+  const score=Math.round(corr/TOTAL_Q*100);
+  document.getElementById('rname').textContent=`${stu.cls} ${stu.seat}號 ｜ ${stu.time}`;
+  document.getElementById('snum').textContent=score;
+  document.getElementById('st1').textContent=corr;
+  document.getElementById('st2').textContent=TOTAL_Q-corr;
+  document.getElementById('st3').textContent=score+'%';
+  const ring=document.getElementById('sring');
+  ring.className='score-ring '+(score>=80?'rh':score>=60?'rm':'rl');
+  const msgs=score>=80?['🌟 表現優秀！','兩個單元概念掌握良好！']:
+    score>=60?['👍 繼續加油！','部分概念需要再複習。']:['💪 需要加強！','建議老師安排補救教學。'];
+  document.getElementById('smsg').textContent=msgs[0];
+  document.getElementById('ssub').textContent=msgs[1];
+
+  // 各概念分類表現
+  const catRpt=document.getElementById('catrpt');catRpt.innerHTML='';
+  ['第五單元','第六單元'].forEach(unit=>{
+    const q0=QS.find(q=>q.unit===unit);
+    const unitHd=document.createElement('div');
+    unitHd.style.cssText=`font-size:13px;font-weight:900;color:${q0.uc.c};margin:10px 0 5px;padding:4px 10px;background:${q0.uc.bg};border-radius:8px`;
+    unitHd.textContent=q0.ui+' '+unit;
+    catRpt.appendChild(unitHd);
+    const subs=[...new Set(QS.filter(q=>q.unit===unit).map(q=>q.sub))];
+    subs.forEach(sub=>{
+      const subAs=answers.filter(a=>a.sub===sub);
+      const sc=subAs.filter(a=>a.correct).length;
+      const pct=subAs.length?Math.round(sc/subAs.length*100):0;
+      const col=pct>=80?'#178a56':pct>=60?'#b87010':'#c82828';
+      const wrong=subAs.filter(a=>!a.correct);
+      const div=document.createElement('div');div.className='cat-card';
+      div.innerHTML=`<div class="cat-hd">
+        <div class="cat-nm"><span>${sub}</span><div class="bar-bg"><div class="bar-fg" style="width:${pct}%;background:${col}"></div></div></div>
+        <div class="cat-sc" style="color:${col}">${sc}/${subAs.length} 題</div>
+      </div>`+(wrong.length?`<div class="wrong-list">`+
+        wrong.map(a=>`<div class="wi"><div class="wlbl">第${a.id}題</div>你的答案：<span style="color:var(--red)">${a.chosen}</span>　正確答案：<span style="color:var(--green)">${a.right}</span></div>`).join('')+'</div>':'');
+      catRpt.appendChild(div);
+    });
+  });
+
+  // 錯誤詳解
+  const wrongAll=answers.filter(a=>!a.correct);
+  const wd=document.getElementById('wrongdet');
+  wd.innerHTML=wrongAll.length?wrongAll.map(a=>`<div class="di">
+    <div class="di-tags">
+      <span class="di-tag" style="background:${a.uc.bg};color:${a.uc.c}">第${a.id}題｜${a.unit}</span>
+      <span class="di-tag" style="background:#f4f6f9;color:#4e5a6a">${a.sub}</span>
+      <span class="di-tag" style="background:#f4f6f9;color:#4e5a6a">${a.type}</span>
+    </div>
+    <div class="di-q">${a.text}</div>
+    <div class="di-ans">
+      <span style="background:#fdeaea;color:#c82828;padding:3px 10px;border-radius:20px;font-size:13px;font-weight:700">✗ ${a.chosen}</span>
+      <span style="color:#8a96a6">→</span>
+      <span style="background:#e7f6ef;color:#178a56;padding:3px 10px;border-radius:20px;font-size:13px;font-weight:700">✓ ${a.right}</span>
+    </div>
+    <div class="di-exp">📝 ${a.exp}</div>
+  </div>`).join(''):'<div style="text-align:center;padding:18px;color:#178a56;font-weight:900;font-size:16px">🎉 全部答對！非常棒！</div>';
+
+  // 上傳 Firebase
+  const wrongSubs=wrongAll.map(a=>({sub:a.sub,unit:a.unit}));
+  const record={
+    cls:stu.cls,seat:parseInt(stu.seat),
+    timestamp:useFirebase?firebase.firestore.FieldValue.serverTimestamp():null,
+    localTime:stu.time,score,correct:corr,totalQ:TOTAL_Q,
+    answers:answers.map(a=>({id:a.id,sub:a.sub,unit:a.unit,type:a.type,correct:a.correct,chosenIdx:a.chosenIdx,rightIdx:a.rightIdx})),
+    wrongSubs,
+    u5score:answers.filter(a=>a.unit==='第五單元'&&a.correct).length,
+    u6score:answers.filter(a=>a.unit==='第六單元'&&a.correct).length,
+  };
+  const statusEl=document.getElementById('upload-status');
+  if(useFirebase){
+    try{
+      await db.collection(COLLECTION).add(record);
+      statusEl.textContent='✅ 作答記錄已成功上傳雲端！老師可在教師看板查閱。';
+      statusEl.className='fb-status ok';statusEl.style.display='block';
+    }catch(e){
+      statusEl.textContent='⚠️ 雲端上傳失敗，記錄已儲存於本機。';
+      statusEl.className='fb-status err';statusEl.style.display='block';
+      saveLocal(record);
+    }
+  }else{statusEl.style.display='none';saveLocal(record);}
+  go('sr');
+}
+
+function saveLocal(record){
+  const recs=JSON.parse(localStorage.getItem('mathQuiz_u5u6')||'[]');
+  recs.push(record);localStorage.setItem('mathQuiz_u5u6',JSON.stringify(recs));
+}
+
+function teacherLogin(){
+  const pwd=document.getElementById('t-pwd').value;
+  if(pwd===TEACHER_PASSWORD){
+    document.getElementById('login-err').style.display='none';
+    document.getElementById('t-pwd').value='';
+    go('st');loadTeacherData();
+  }else{
+    document.getElementById('login-err').style.display='block';
+  }
+}
+
+async function loadTeacherData(){
+  const cls=document.getElementById('t-cls-filter').value;
+  document.getElementById('t-loading').style.display='inline';
+  document.getElementById('t-fb-note').textContent='';
+  let recs=[];
+  if(useFirebase){
+    try{
+      let q=db.collection(COLLECTION).orderBy('timestamp','desc').limit(500);
+      if(cls)q=db.collection(COLLECTION).where('cls','==',cls).orderBy('timestamp','desc').limit(500);
+      const snap=await q.get();
+      recs=snap.docs.map(d=>({id:d.id,...d.data()}));
+      document.getElementById('t-fb-note').textContent='📡 資料來源：Firebase 雲端';
+    }catch(e){
+      recs=getLocalRecs(cls);
+      document.getElementById('t-fb-note').textContent='⚠️ 雲端失敗，顯示本機資料';
+    }
+  }else{
+    recs=getLocalRecs(cls);
+    document.getElementById('t-fb-note').textContent='💾 本機模式';
+  }
+  document.getElementById('t-loading').style.display='none';
+  renderTeacher(recs,cls);
+}
+
+function getLocalRecs(cls){
+  const all=JSON.parse(localStorage.getItem('mathQuiz_u5u6')||'[]');
+  return cls?all.filter(r=>r.cls===cls):all;
+}
+
+function renderTeacher(recs,cls){
+  const tl=document.getElementById('tlist');
+  if(!recs.length){
+    tl.innerHTML=`<div class="empty">📭 尚無學生作答記錄${cls?' ('+cls+')':''}</div>`;
+  }else{
+    const avg=(recs.reduce((s,r)=>s+r.score,0)/recs.length).toFixed(1);
+    const hi=recs.filter(r=>r.score>=80).length;
+    tl.innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px">
+      <div style="background:#f4f6f9;border-radius:8px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:900;color:#1a50b8">${recs.length}</div><div style="font-size:11px;color:#8a96a6">作答人數</div></div>
+      <div style="background:#f4f6f9;border-radius:8px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:900;color:#1a50b8">${avg}</div><div style="font-size:11px;color:#8a96a6">平均分數</div></div>
+      <div style="background:#f4f6f9;border-radius:8px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:900;color:#178a56">${hi}</div><div style="font-size:11px;color:#8a96a6">80分以上</div></div>
+    </div>`+
+    recs.map(r=>{
+      const c=r.score>=80?'#178a56':r.score>=60?'#b87010':'#c82828';
+      const bg=r.score>=80?'#e7f6ef':r.score>=60?'#fdf3e0':'#fdeaea';
+      const t=r.localTime||(r.timestamp?.toDate?r.timestamp.toDate().toLocaleString('zh-TW'):'');
+      return `<div class="sr-row">
+        <div class="av">${r.cls?r.cls.replace('六年','6/').replace('班',''):''}</div>
+        <div class="sinfo"><div class="nm">${r.cls} ${r.seat}號</div>
+        <div class="mt">${t}　第五單元:${r.u5score||'-'}/10　第六單元:${r.u6score||'-'}/11</div></div>
+        <div class="sbadge" style="color:${c};background:${bg}">${r.score}分</div>
+      </div>`;
+    }).join('')+(!useFirebase?'<button class="btn-clr" onclick="clearRecs()">清除本機記錄</button>':'');
+  }
+
+  // 弱點分析
+  const allWrong=recs.flatMap(r=>r.wrongSubs||[]);
+  const subCnt={};
+  allWrong.forEach(({sub,unit})=>{const k=unit+'|'+sub;if(!subCnt[k])subCnt[k]={sub,unit,n:0};subCnt[k].n++;});
+  const sorted=Object.values(subCnt).sort((a,b)=>b.n-a.n);
+  const tw=document.getElementById('tweak');
+  tw.innerHTML=!sorted.length?'<div class="empty">暫無資料</div>':
+    `<div style="font-size:12px;color:var(--texth);margin-bottom:10px">共 ${recs.length} 筆記錄${cls?' ('+cls+')':''}</div>`+
+    sorted.map(({sub,unit,n})=>{
+      const pct=Math.round(n/sorted[0].n*100);
+      const col=pct>66?'#c82828':pct>33?'#b87010':'#178a56';
+      const q0=QS.find(q=>q.unit===unit);
+      const uc=q0?q0.uc:{bg:'#f4f6f9',c:'#4e5a6a'};
+      return `<div class="weakness-bar">
+        <div class="wb-row">
+          <span><span style="font-size:11px;background:${uc.bg};color:${uc.c};padding:2px 7px;border-radius:12px;font-weight:700;margin-right:5px">${unit}</span><b>${sub}</b></span>
+          <span style="color:${col};font-weight:700">錯誤 ${n} 次（${Math.round(n/Math.max(recs.length,1)*100)}% 學生）</span>
+        </div>
+        <div class="wb-bg"><div class="wb-fg" style="width:${pct}%;background:${col}"></div></div>
+      </div>`;
+    }).join('');
+
+  // 補救建議
+  const tr=document.getElementById('tremed');
+  const top3=sorted.slice(0,3);
+  tr.innerHTML=!top3.length?'<div class="empty">暫無資料</div>':
+    '<div style="margin-bottom:12px;font-size:13.5px;line-height:1.8">根據錯誤分析，建議優先安排補救教學：</div>'+
+    top3.map((s,i)=>`<div class="remedy-box">
+      <b>${['🥇','🥈','🥉'][i]} 優先補救：${s.sub}</b>（${s.unit}，共錯 ${s.n} 次）<br>
+      ${REMEDY_MAP[s.sub]||'建議安排針對性練習題，搭配圖示說明。'}
+    </div>`).join('');
+}
+
+function clearRecs(){
+  if(confirm('確定清除所有本機學生記錄？')){localStorage.removeItem('mathQuiz_u5u6');loadTeacherData();}
+}
+
+function resetAll(){
+  document.getElementById('icls').value='';
+  document.getElementById('iseat').value='';
+  go('sw');
+}
+
+window.addEventListener('load',()=>{
+  initFirebase();
+  go('sw');
+  const url=window.location.href;
+  document.getElementById('qrurl').textContent=url.length>60?url.slice(0,60)+'…':url;
+  if(typeof QRCode!=='undefined'){
+    new QRCode(document.getElementById('qrbox'),{
+      text:url,width:130,height:130,
+      colorDark:'#1a3a78',colorLight:'#ffffff',
+      correctLevel:QRCode.CorrectLevel.M
+    });
+  }
+});
+</script>
+</body>
+</html>
